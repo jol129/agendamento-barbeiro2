@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Agendamento - Barbearia (corrigido)</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#f59e0b;--muted:#94a3b8;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#071226 0%, #0b2540 100%);color:#e6eef8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px}
+    .container{width:100%;max-width:920px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.03));border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.6);overflow:hidden;display:grid;grid-template-columns:400px 1fr}
+    .left{padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));}
+    h1{margin:0 0 8px;font-size:22px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .brand{display:flex;gap:10px;align-items:center;margin-bottom:18px}
+    .logo{width:56px;height:56px;border-radius:10px;background:var(--glass);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+    form{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:14px}
+    select{appearance:none}
+    .row{display:flex;gap:12px}
+    .row .col{flex:1}
+    .btn{display:inline-block;padding:12px 14px;border-radius:10px;background:linear-gradient(90deg,var(--accent),#ffb86b);color:#071226;font-weight:700;border:none;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(255,255,255,0.06)}
+    .right{padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));display:flex;flex-direction:column;gap:10px}
+    .preview{flex:1;border-radius:10px;padding:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));border:1px solid rgba(255,255,255,0.02);color:var(--muted);overflow:auto}
+    .note{font-size:13px;color:var(--muted)}
+    footer{font-size:12px;color:var(--muted);margin-top:10px}
+    @media(max-width:860px){.container{grid-template-columns:1fr;}.left{order:2}}
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <div class="left">
+      <div class="brand">
+        <div class="logo">B</div>
+        <div>
+          <strong>Barbearia</strong>
+          <div style="font-size:12px;color:var(--muted)">Agende seu corte com facilidade</div>
+        </div>
+      </div>
+      <h1>Agendamento</h1>
+      <p class="lead">Escolha o serviço, data e horário. Ao confirmar, as informações serão abertas no WhatsApp para envio ao número da barbearia.</p>
+
+      <form id="bookingForm">
+        <div>
+          <label for="name">Nome</label>
+          <input id="name" name="name" type="text" placeholder="Seu nome" required />
+        </div>
+
+        <div>
+          <label for="phone">Telefone</label>
+          <input id="phone" name="phone" type="tel" placeholder="(xx) 9xxxx-xxxx" required />
+        </div>
+
+        <div>
+          <label for="service">Serviço</label>
+          <select id="service" name="service" required>
+            <option value="Corte simples">Corte simples</option>
+            <option value="Corte degradê">Corte degradê</option>
+            <option value="Barba">Barba</option>
+            <option value="Corte + Barba">Corte + Barba</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="date">Data</label>
+            <input id="date" name="date" type="date" required />
+          </div>
+          <div class="col">
+            <label for="time">Horário</label>
+            <input id="time" name="time" type="time" required />
+          </div>
+        </div>
+
+        <div>
+          <label for="notes">Observações</label>
+          <textarea id="notes" name="notes" rows="3" placeholder="Ex: preferência por barbeiro X, alergias..."></textarea>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:6px;align-items:center">
+          <button type="submit" class="btn">Agendar via WhatsApp</button>
+          <button type="button" id="clearBtn" class="btn ghost">Limpar</button>
+        </div>
+
+        <!-- Coloque aqui o DDD + número sem formatação (ex: 75983347724). O script adiciona automaticamente o +55 quando necessário. -->
+        <input type="hidden" id="waPhone" value="75983347724">
+      </form>
+
+      <footer>
+        Dica: se o WhatsApp abrir no navegador, confirme o envio para concluir o agendamento.
+      </footer>
+    </div>
+
+    <div class="right">
+      <div class="preview" id="preview">
+        <strong>Resumo do agendamento</strong>
+        <div class="note" id="summary">Preencha o formulário para ver a prévia da mensagem que será enviada ao WhatsApp.</div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;justify-content:space-between">
+        <div class="note">Número destino configurado automaticamente.</div>
+        <div style="font-size:13px;color:var(--muted)">Número: <strong>+55 75 98334-7724</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Selecionar elementos
+    const form = document.getElementById('bookingForm');
+    const summary = document.getElementById('summary');
+    const waPhoneInput = document.getElementById('waPhone');
+    const clearBtn = document.getElementById('clearBtn');
+
+    // Normaliza o número informado para o formato internacional exigido pelo wa.me (sem +)
+    function normalizePhone(raw){
+      if(!raw) return '';
+      let p = String(raw).replace(/\D/g,''); // só dígitos
+      // remove zeros à esquerda
+      p = p.replace(/^0+/, '');
+      // já tem código do país?
+      if(p.startsWith('55')) return p;
+      // Se tiver 11 dígitos (DDD + 9 dígitos) adiciona 55
+      if(p.length === 11 || p.length === 10) return '55' + p;
+      // fallback: se o número tiver entre 8 e 13 dígitos mas não começar com 55, adicione 55
+      if(p.length >= 8 && p.length <= 13) return '55' + p;
+      return p; // deixa como está (possível número já internacional)
+    }
+
+    function buildMessage(data){
+      const lines = [];
+      lines.push('Novo agendamento 🧾');
+      lines.push('Nome: ' + data.name);
+      lines.push('Telefone: ' + data.phone);
+      lines.push('Serviço: ' + data.service);
+      lines.push('Data: ' + data.date);
+      lines.push('Horário: ' + data.time);
+      if(data.notes) lines.push('Observações: ' + data.notes);
+      lines.push('---');
+      lines.push('Favor confirmar disponibilidade e horário.');
+      return lines.join('\n');
+    }
+
+    function updatePreview(){
+      const data = {
+        name: document.getElementById('name').value || '[nome]',
+        phone: document.getElementById('phone').value || '[telefone]',
+        service: document.getElementById('service').value || '[serviço]',
+        date: document.getElementById('date').value || '[data]',
+        time: document.getElementById('time').value || '[horário]',
+        notes: document.getElementById('notes').value || ''
+      };
+      summary.textContent = buildMessage(data);
+    }
+
+    // Atualiza preview ao alterar campos
+    document.querySelectorAll('#bookingForm input, #bookingForm select, #bookingForm textarea').forEach(el=>{
+      el.addEventListener('input', updatePreview);
+    });
+
+    // Limpar formulário
+    clearBtn.addEventListener('click', ()=>{
+      form.reset();
+      updatePreview();
+    });
+
+    // Envio para WhatsApp
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      const message = buildMessage(data);
+      const encoded = encodeURIComponent(message);
+
+      // Normaliza o número configurado no campo hidden (adiciona +55 se necessário)
+      const waPhone = normalizePhone(waPhoneInput.value);
+
+      // Se ainda não houver um número válido, avisa o usuário
+      if(!waPhone || waPhone.length < 10){
+        alert('Número do WhatsApp inválido. Verifique a configuração do campo #waPhone.');
+        return;
+      }
+
+      // Monta o link (wa.me funciona tanto no desktop quanto no mobile)
+      const waLink = `https://wa.me/${waPhone}?text=${encoded}`;
+
+      // Abre em nova aba (o usuário deve confirmar o envio no WhatsApp). Em mobile, abrirá o app quando disponível.
+      window.open(waLink, '_blank');
+    });
+
+    // Inicializa preview
+    updatePreview();
+  </script>
+</body>
+</html>
